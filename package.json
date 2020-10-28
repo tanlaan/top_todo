@@ -1,0 +1,23 @@
+{
+  "name": "top_todo",
+  "version": "1.0.0",
+  "description": "Small app for todos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanlaan/top_todo.git"
+  },
+  "author": "Chris Bolas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tanlaan/top_todo/issues"
+  },
+  "homepage": "https://github.com/tanlaan/top_todo#readme",
+  "devDependencies": {
+    "webpack": "^5.2.0",
+    "webpack-cli": "^4.1.0"
+  }
+}
