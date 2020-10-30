@@ -7,6 +7,7 @@ export class Task {
         this.task = task
         this.note = note
         this.tags = tags
+        this.complete = false
     }
 }
 
