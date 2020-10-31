@@ -1,9 +1,20 @@
-export function loadHeader(element) {
+export function renderHeader(element) {
     let header = document.createElement('header')
     let title = document.createElement('h1')
     title.textContent = `Chris' Todo`
     header.appendChild(title)
     element.appendChild(header)
+}
+
+export function renderTabs(element, projects) {
+    console.log(projects)
+    let list = document.createElement('ul')
+    for (let project in projects){
+        let item = document.createElement('li')
+        item.textContent = projects[project].name
+        list.appendChild(item)
+    }
+    element.appendChild(list)
 }
 
 export function renderTask(element, task) {
@@ -29,8 +40,6 @@ export function renderTask(element, task) {
     let tagText = document.createElement('p')
     tagText.textContent = task.tags
     container.appendChild(tagText)
-
-    container.appendChild(document.createElement('hr'))
 
     element.appendChild(container)
     
