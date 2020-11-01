@@ -17,31 +17,58 @@ export function renderTabs(element, projects) {
     element.appendChild(list)
 }
 
-export function renderTask(element, task) {
+export function makeTaskContainer(){
+    let container = makeClassContainer('task-box')
+    return container
+}
+
+function makeClassContainer(name) {
     let container = document.createElement('div')
-    container.setAttribute('class', 'task-box')
+    container.setAttribute('class', name)
+    return container
+}
+
+export function renderTask(element, task) {
+    removeChildren(element)
+
+    // let container = document.createElement('div')
+    // container.setAttribute('class', 'task-box')
+    element.addEventListener('click', (event) => renderFullTask(event.currentTarget, task))
 
     let title = document.createElement('h3')
     title.textContent = task.title
-    container.appendChild(title)
-
-    let subtitle = document.createElement('p')
-    subtitle.textContent = `Priority: ${task.priority} | Due: ${task.dueDate} | Complete: ${task.complete}`
-    container.appendChild(subtitle)
+    element.appendChild(title)
 
     let taskText = document.createElement('p')
     taskText.textContent = task.task
-    container.appendChild(taskText)
+    element.appendChild(taskText)
+
+}
+
+export function renderFullTask(element, task) {
+    removeChildren(element)
+
+    element.addEventListener('click', (event) => renderTask(event.currentTarget, task))
+
+    let title = document.createElement('h3')
+    title.textContent = task.title
+    element.appendChild(title)
+
+    let subtitle = document.createElement('p')
+    subtitle.textContent = `Priority: ${task.priority} | Due: ${task.dueDate} | Complete: ${task.complete}`
+    element.appendChild(subtitle)
+
+    let taskText = document.createElement('p')
+    taskText.textContent = task.task
+    element.appendChild(taskText)
 
     let noteText = document.createElement('p')
     noteText.textContent = task.noteText
-    container.appendChild(noteText)
+    element.appendChild(noteText)
 
     let tagText = document.createElement('p')
     tagText.textContent = task.tags
-    container.appendChild(tagText)
-
-    element.appendChild(container)
+    element.appendChild(tagText)
     
 }
 
