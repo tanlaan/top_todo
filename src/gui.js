@@ -28,12 +28,14 @@ function makeClassContainer(name) {
     return container
 }
 
+
 export function renderTask(element, task) {
     removeChildren(element)
 
-    // let container = document.createElement('div')
-    // container.setAttribute('class', 'task-box')
-    element.addEventListener('click', (event) => renderFullTask(event.currentTarget, task))
+    element.addEventListener('click', function taskListener(event){
+        renderFullTask(event.currentTarget, task)
+        element.removeEventListener('click', taskListener)
+    })
 
     let title = document.createElement('h3')
     title.textContent = task.title
@@ -48,7 +50,10 @@ export function renderTask(element, task) {
 export function renderFullTask(element, task) {
     removeChildren(element)
 
-    element.addEventListener('click', (event) => renderTask(event.currentTarget, task))
+    element.addEventListener('click', function fullTaskListener(event) {
+        renderTask(event.currentTarget, task)
+        element.removeEventListener('click', fullTaskListener)
+    })
 
     let title = document.createElement('h3')
     title.textContent = task.title
