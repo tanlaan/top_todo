@@ -9,7 +9,24 @@ export class Task {
         this.tags = tags
         this.complete = false
     }
+
+    changePriority(number){
+        this.priority = number
+    }
+
+    toggleComplete(){
+        this.complete == true ? this.complete = false : this.complete = true
+    }
+
+    addTag(tag){
+        this.tag.push(tag)
+    }
+
+    removeTag(tag){
+        this.tag.splice(this.tag.indexOf(tag),1)
+    }
 }
+
 
 export class Project {
     constructor(name){
