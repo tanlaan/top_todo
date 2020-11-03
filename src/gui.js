@@ -47,13 +47,8 @@ export function renderTask(element, task) {
     taskText.textContent = task.task
     element.appendChild(taskText)
 
-    let remove = document.createElement('button')
-    remove.textContent = '🗑️'
-    remove.addEventListener('click', function removeListener(event){
-        _removeChildren(event.currentTarget.parentNode)
-        event.stopPropagation()
-    })
-    element.appendChild(remove)
+    _editButton(element, task)
+    _removeButton(element)
 
 }
 
@@ -86,7 +81,44 @@ export function renderFullTask(element, task) {
     let tagText = document.createElement('p')
     tagText.textContent = `[${task.tags}]`
     element.appendChild(tagText)
+
+    _editButton(element, task)
+    _removeButton(element)
     
+}
+
+export function renderProject(element, project){
+    for (let task of project.storage){
+        let container = makeTaskContainer()
+        renderTask(container, task)
+        element.appendChild(container)
+    }
+    _addButton(element, project)
+}
+
+function _addButton(element, project){
+    let add = document.createElement('button')
+    add.innerHTML =  "&#43;"
+    element.appendChild(add)
+}
+
+function _editButton(element, task){
+    let edit = document.createElement('button')
+    edit.innerHTML = "&#128221;"
+    edit.addEventListener('click', function editListener(event){
+        event.stopPropagation()
+    })
+    element.appendChild(edit)
+}
+
+function _removeButton(element) {
+    let remove = document.createElement('button')
+    remove.textContent = '🗑️'
+    remove.addEventListener('click', function removeListener(event){
+        _removeChildren(event.currentTarget.parentNode)
+        event.stopPropagation()
+    })
+    element.appendChild(remove)
 }
 
 function _removeChildren(element) {

@@ -1,6 +1,6 @@
 import {Project, Task} from './task.js'
 
-import {renderHeader, renderTabs, renderTask, renderFullTask, makeTaskContainer} from './gui.js'
+import {renderHeader, renderTabs, renderTask, renderFullTask, makeTaskContainer, renderProject} from './gui.js'
 
 let projects = []
 
@@ -19,10 +19,7 @@ let root = document.getElementsByTagName('MAIN')[0]
 
 renderHeader(root)
 renderTabs(root, projects)
+renderProject(root, defaultProject)
 
-for (let task of defaultProject.storage){
-    let container = makeTaskContainer()
-    renderTask(container, task)
-    root.appendChild(container)
-}
+
 
