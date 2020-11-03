@@ -20,9 +20,9 @@ let root = document.getElementsByTagName('MAIN')[0]
 renderHeader(root)
 renderTabs(root, projects)
 
-for (let task in defaultProject.storage){
-    let test = makeTaskContainer()
-    renderTask(test, defaultProject.storage[task])
-    root.appendChild(test)
+for (let task of defaultProject.storage){
+    let container = makeTaskContainer()
+    renderTask(container, task)
+    root.appendChild(container)
 }
 

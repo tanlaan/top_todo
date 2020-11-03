@@ -9,20 +9,22 @@ export function renderHeader(element) {
 export function renderTabs(element, projects) {
     console.log(projects)
     let list = document.createElement('ul')
-    for (let project in projects){
+    for (let project of projects){
         let item = document.createElement('li')
-        item.textContent = projects[project].name
+        item.textContent = project.name
+        // item.addEventListener('click', doGuiStuff)
         list.appendChild(item)
     }
+    // + icon for adding a new project
     element.appendChild(list)
 }
 
 export function makeTaskContainer(){
-    let container = makeClassContainer('task-box')
+    let container = _makeClassContainer('task-box')
     return container
 }
 
-function makeClassContainer(name) {
+function _makeClassContainer(name) {
     let container = document.createElement('div')
     container.setAttribute('class', name)
     return container
@@ -30,7 +32,7 @@ function makeClassContainer(name) {
 
 
 export function renderTask(element, task) {
-    removeChildren(element)
+    _removeChildren(element)
 
     element.addEventListener('click', function taskListener(event){
         renderFullTask(event.currentTarget, task)
@@ -45,12 +47,22 @@ export function renderTask(element, task) {
     taskText.textContent = task.task
     element.appendChild(taskText)
 
+    let remove = document.createElement('button')
+    remove.textContent = '🗑️'
+    remove.addEventListener('click', function removeListener(event){
+        _removeChildren(event.currentTarget.parentNode)
+        event.stopPropagation()
+    })
+    element.appendChild(remove)
+
 }
 
 export function renderFullTask(element, task) {
-    removeChildren(element)
+    _removeChildren(element)
+    element.classList.add('expanded')
 
     element.addEventListener('click', function fullTaskListener(event) {
+        element.classList.remove('expanded')
         renderTask(event.currentTarget, task)
         element.removeEventListener('click', fullTaskListener)
     })
@@ -72,12 +84,12 @@ export function renderFullTask(element, task) {
     element.appendChild(noteText)
 
     let tagText = document.createElement('p')
-    tagText.textContent = task.tags
+    tagText.textContent = `[${task.tags}]`
     element.appendChild(tagText)
     
 }
 
-function removeChildren(element) {
+function _removeChildren(element) {
     while(element.firstChild) {
         element.removeChild(element.lastChild)
     }
