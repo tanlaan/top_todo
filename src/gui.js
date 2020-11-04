@@ -12,11 +12,18 @@ export function renderTabs(element, projects) {
     for (let project of projects){
         let item = document.createElement('li')
         item.textContent = project.name
-        // item.addEventListener('click', doGuiStuff)
+        item.addEventListener('click', function tabListener(event){
+            _removeChildren(element)
+            renderHeader(element)
+            renderTabs(element, projects)
+            renderProject(element, project)
+            item.removeEventListener('click', tabListener)
+        })
         list.appendChild(item)
     }
     // + icon for adding a new project
     element.appendChild(list)
+    _addProjectButton(element)
 }
 
 export function makeTaskContainer(){
@@ -93,12 +100,24 @@ export function renderProject(element, project){
         renderTask(container, task)
         element.appendChild(container)
     }
-    _addButton(element, project)
+    _addTaskButton(element, project)
 }
 
-function _addButton(element, project){
+function _addTaskButton(element, project){
     let add = document.createElement('button')
     add.innerHTML =  "&#43;"
+    add.addEventListener('click', function editListener(event){
+        event.stopPropagation()
+    })
+    element.appendChild(add)
+}
+
+function _addProjectButton(element) {
+    let add = document.createElement('button')
+    add.innerHTML = "&#43;"
+    add.addEventListener('click', function editListener(event){
+        event.stopPropagation()
+    })
     element.appendChild(add)
 }
 
