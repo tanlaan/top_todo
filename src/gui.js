@@ -1,3 +1,10 @@
+export function renderPage(element, project, projects) {
+    _removeChildren(element)
+    renderHeader(element)
+    renderTabs(element, projects)
+    renderProject(element, project)
+}
+
 export function renderHeader(element) {
     let header = document.createElement('header')
     let title = document.createElement('h1')
@@ -7,24 +14,22 @@ export function renderHeader(element) {
 }
 
 export function renderTabs(element, projects) {
-    console.log(projects)
+    let tabs = document.createElement('div')
+    tabs.setAttribute('id', 'project-tabs')
+
     let list = document.createElement('ul')
     for (let project of projects){
         let item = document.createElement('li')
         item.textContent = project.name
         item.addEventListener('click', function tabListener(event){
-            // Simplify into a renderPage function?
-            _removeChildren(element)
-            renderHeader(element)
-            renderTabs(element, projects)
-            renderProject(element, project)
+            renderPage(element, project, projects)
             item.removeEventListener('click', tabListener)
         })
         list.appendChild(item)
     }
-    // + icon for adding a new project
-    element.appendChild(list)
-    _addProjectButton(element)
+    tabs.append(list)
+    _addProjectButton(tabs)
+    element.appendChild(tabs)
 }
 
 export function makeTaskContainer(){
@@ -43,7 +48,7 @@ export function renderTask(element, task, project) {
     _removeChildren(element)
 
     element.addEventListener('click', function taskListener(event){
-        renderFullTask(event.currentTarget, task)
+        renderFullTask(event.currentTarget, task, project)
         element.removeEventListener('click', taskListener)
     })
 
@@ -56,7 +61,7 @@ export function renderTask(element, task, project) {
     element.appendChild(taskText)
 
     _editButton(element, task)
-    _removeButton(element, task, project)
+    _removeTaskButton(element, task, project)
 
 }
 
@@ -90,8 +95,8 @@ export function renderFullTask(element, task, project) {
     tagText.textContent = `[${task.tags}]`
     element.appendChild(tagText)
 
-    _editButton(element, task)
-    _removeButton(element, task, project)
+    _editButton(element, task, project)
+    _removeTaskButton(element, task, project)
     
 }
 
@@ -131,13 +136,13 @@ function _editButton(element, task, project){
     element.appendChild(edit)
 }
 
-function _removeButton(element, task, project) {
+function _removeTaskButton(element, task, project) {
     let remove = document.createElement('button')
     remove.textContent = '🗑️'
     remove.addEventListener('click', function removeListener(event){
-        _removeChildren(event.currentTarget.parentNode)
-        project.remove(task.title)
         event.stopPropagation()
+        project.remove(task.title)
+        _removeChildren(event.currentTarget.parentNode)
     })
     element.appendChild(remove)
 }

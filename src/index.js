@@ -1,6 +1,6 @@
 import {Project, Task} from './task.js'
 
-import {renderHeader, renderTabs, renderTask, renderFullTask, makeTaskContainer, renderProject} from './gui.js'
+import {renderHeader, renderTabs, renderProject, renderPage} from './gui.js'
 
 let projects = []
 
@@ -24,11 +24,8 @@ testProject.add(different)
 
 projects.push(testProject)
 
-let root = document.getElementsByTagName('MAIN')[0]
-
-renderHeader(root)
-renderTabs(root, projects)
-renderProject(root, defaultProject)
+let root = document.querySelector('main')
+renderPage(root, defaultProject, projects)
 
 
 
