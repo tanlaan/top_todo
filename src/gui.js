@@ -13,6 +13,7 @@ export function renderTabs(element, projects) {
         let item = document.createElement('li')
         item.textContent = project.name
         item.addEventListener('click', function tabListener(event){
+            // Simplify into a renderPage function?
             _removeChildren(element)
             renderHeader(element)
             renderTabs(element, projects)
@@ -38,7 +39,7 @@ function _makeClassContainer(name) {
 }
 
 
-export function renderTask(element, task) {
+export function renderTask(element, task, project) {
     _removeChildren(element)
 
     element.addEventListener('click', function taskListener(event){
@@ -55,11 +56,11 @@ export function renderTask(element, task) {
     element.appendChild(taskText)
 
     _editButton(element, task)
-    _removeButton(element)
+    _removeButton(element, task, project)
 
 }
 
-export function renderFullTask(element, task) {
+export function renderFullTask(element, task, project) {
     _removeChildren(element)
     element.classList.add('expanded')
 
@@ -90,14 +91,14 @@ export function renderFullTask(element, task) {
     element.appendChild(tagText)
 
     _editButton(element, task)
-    _removeButton(element)
+    _removeButton(element, task, project)
     
 }
 
 export function renderProject(element, project){
     for (let task of project.storage){
         let container = makeTaskContainer()
-        renderTask(container, task)
+        renderTask(container, task, project)
         element.appendChild(container)
     }
     _addTaskButton(element, project)
@@ -121,7 +122,7 @@ function _addProjectButton(element) {
     element.appendChild(add)
 }
 
-function _editButton(element, task){
+function _editButton(element, task, project){
     let edit = document.createElement('button')
     edit.innerHTML = "&#128221;"
     edit.addEventListener('click', function editListener(event){
@@ -130,11 +131,12 @@ function _editButton(element, task){
     element.appendChild(edit)
 }
 
-function _removeButton(element) {
+function _removeButton(element, task, project) {
     let remove = document.createElement('button')
     remove.textContent = '🗑️'
     remove.addEventListener('click', function removeListener(event){
         _removeChildren(event.currentTarget.parentNode)
+        project.remove(task.title)
         event.stopPropagation()
     })
     element.appendChild(remove)
