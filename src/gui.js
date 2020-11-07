@@ -1,3 +1,5 @@
+import { Task } from "./task"
+
 export function renderPage(element, project, projects) {
     _removeChildren(element)
     renderHeader(element)
@@ -115,7 +117,11 @@ function _addTaskButton(element, project){
     add.innerHTML =  "&#43;"
     add.addEventListener('click', function editListener(event){
         event.stopPropagation()
-        addTaskForm(element, project)
+        let formCheck = document.getElementById('new-task')
+        if(typeof(formCheck) == 'undeclared' || formCheck == null){
+            addTaskForm(element, project)
+        }
+
     })
     element.appendChild(add)
 }
@@ -177,49 +183,90 @@ function addTaskForm(element, project) {
     
     let priority = document.createElement('input')
     priority.setAttribute('type', 'number')
+    priority.setAttribute('min', '-4')
+    priority.setAttribute('max', '5')
     taskForm.appendChild(priority)
 
     // dueDate
     let dueDateLabel = document.createElement('label')
     dueDateLabel.textContent = 'Due Date:'
+    dueDateLabel.setAttribute('for', 'dueDate')
     taskForm.appendChild(dueDateLabel)
 
     let dueDate = document.createElement('input')
     dueDate.setAttribute('type', 'date')
+    dueDate.setAttribute('name', 'dueDate')
     taskForm.appendChild(dueDate)
 
     // task
     let taskLabel = document.createElement('label')
     taskLabel.textContent = 'Task:'
+    taskLabel.setAttribute('for', 'task')
     taskForm.appendChild(taskLabel)
 
     let task = document.createElement('input')
     task.setAttribute('type', 'text')
+    task.setAttribute('name', 'task')
     taskForm.appendChild(task)
     // note
     let noteLabel = document.createElement('label')
     noteLabel.textContent = 'Note:'
+    noteLabel.setAttribute('for', 'note')
     taskForm.appendChild(noteLabel)
 
     let note = document.createElement('input')
     note.setAttribute('type', 'text')
+    note.setAttribute('name', 'note')
     taskForm.appendChild(note)
     // tags
     let tagsLabel = document.createElement('label')
     tagsLabel.textContent = 'Tags:'
+    tagsLabel.setAttribute('for', 'tags')
     taskForm.appendChild(tagsLabel)
 
     let tags = document.createElement('input')
     tags.setAttribute('type', 'text')
+    tags.setAttribute('name', 'tags')
     taskForm.appendChild(tags)
     // complete
     let completeLabel = document.createElement('label')
     completeLabel.textContent = 'Complete:'
+    completeLabel.setAttribute('for', 'complete')
     taskForm.appendChild(completeLabel)
 
     let complete = document.createElement('input')
-    complete.setAttribute('type', 'text')
+    complete.setAttribute('type', 'checkbox')
+    complete.setAttribute('name', 'complete')
     taskForm.appendChild(complete)
 
+    let okay = document.createElement('button')
+    okay.textContent = 'OK'
+    okay.addEventListener('click', newTaskListener)
+    taskForm.appendChild(okay)
+
+    let cancel = document.createElement('button')
+    cancel.textContent = 'Cancel'
+    cancel.addEventListener('click', function cancelListener(event){
+        event.stopPropagation()
+        let form = document.getElementById('new-task')
+        _removeChildren(form)
+        form.remove()
+    })
+    taskForm.appendChild(cancel)
+
     element.appendChild(taskForm)
+}
+
+function newTaskListener(event){
+    event.stopPropagation()
+    let data = event.currentTarget.parentNode
+    let title = data.querySelector('input[name="title"]')
+    let priority = data.querySelector('input[name="priority"]')
+    let dueDate = data.querySelector('input[name="dueDate"]')
+    let task = data.querySelector('input[name="task"]')
+    let note = data.querySelector('input[name="note"]')
+    let tags = data.querySelector('input[name="tags"]')
+    let complete = data.querySelector('input[name="complete"]')
+    let formTask = new Task(title, priority, dueDate, task, note, tags, complete)
+    console.log(formTask)
 }
