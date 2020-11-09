@@ -18,6 +18,7 @@ projects.push(defaultProject)
 let testProject = new Project()
 testProject.name = 'Testing'
 let different = new Task("I'm different", 0, '01/01/21', 'This is a thing to do.', "Don't forget to do this.", ['tags', 'n', 'stuff'])
+different.complete = true
 testProject.add(testTask)
 testProject.add(otherTask)
 testProject.add(different)

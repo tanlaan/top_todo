@@ -58,6 +58,17 @@ export function renderTask(element, task, project) {
     title.textContent = task.title
     element.appendChild(title)
 
+    let complete = document.createElement('input')
+    complete.setAttribute('type', 'checkbox')
+    complete.checked = task.complete
+    // Click event to change task's complete 
+    complete.addEventListener('click', function completeListener(event){
+        event.stopPropagation()
+        task.toggleComplete()
+    })
+    element.appendChild(complete)
+
+
     let taskText = document.createElement('p')
     taskText.textContent = task.task
     element.appendChild(taskText)
@@ -82,7 +93,15 @@ export function renderFullTask(element, task, project) {
     element.appendChild(title)
 
     let subtitle = document.createElement('p')
-    subtitle.textContent = `Priority: ${task.priority} | Due: ${task.dueDate} | Complete: ${task.complete}`
+    subtitle.textContent = `Priority: ${task.priority} | Due: ${task.dueDate} | Complete: `
+    let complete = document.createElement('input')
+    complete.setAttribute('type', 'checkbox')
+    complete.checked = task.complete
+    complete.addEventListener('click', function completeListener(event){
+        event.stopPropagation()
+        task.toggleComplete()
+    })
+    subtitle.append(complete)
     element.appendChild(subtitle)
 
     let taskText = document.createElement('p')
@@ -99,7 +118,6 @@ export function renderFullTask(element, task, project) {
 
     _editButton(element, task, project)
     _removeTaskButton(element, task, project)
-    
 }
 
 export function renderProject(element, project){
@@ -133,6 +151,7 @@ function _addProjectButton(element) {
     let add = document.createElement('button')
     add.classList.add('add-project')
     add.innerHTML = "&#43;"
+    add.setAttribute('type', 'button')
     add.addEventListener('click', function editListener(event){
         event.stopPropagation()
     })
@@ -143,6 +162,7 @@ function _editButton(element, task, project){
     let edit = document.createElement('button')
     edit.classList.add('edit-task')
     edit.innerHTML = "&#128221;"
+    edit.setAttribute('type', 'button')
     edit.addEventListener('click', function editListener(event){
         event.stopPropagation()
     })
