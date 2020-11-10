@@ -3,7 +3,7 @@ import { Task } from "./task"
 export function renderPage(element, project, projects) {
     _removeChildren(element)
     renderHeader(element)
-    renderTabs(element, projects)
+    renderTabs(element, project.name, projects)
     renderProject(element, project)
 }
 
@@ -15,13 +15,16 @@ export function renderHeader(element) {
     element.appendChild(header)
 }
 
-export function renderTabs(element, projects) {
+export function renderTabs(element, selectedProject, projects) {
     let tabs = document.createElement('div')
     tabs.setAttribute('id', 'project-tabs')
 
     let list = document.createElement('ul')
     for (let project of projects){
         let item = document.createElement('li')
+        if(selectedProject == project.name){
+            item.setAttribute('id', 'selected-tab')
+        }
         item.textContent = project.name
         item.addEventListener('click', function tabListener(event){
             renderPage(element, project, projects)
@@ -62,18 +65,16 @@ export function renderTask(element, task, project) {
     complete.setAttribute('type', 'checkbox')
     complete.checked = task.complete
     // Click event to change task's complete 
-    complete.addEventListener('click', function completeListener(event){
-        event.stopPropagation()
-        task.toggleComplete()
-    })
-    element.appendChild(complete)
+    // complete.addEventListener('click', function completeListener(event){
+    //     event.stopPropagation()
+    //     task.toggleComplete()
+    // })
+    // element.appendChild(complete)
 
 
     let taskText = document.createElement('p')
     taskText.textContent = task.task
     element.appendChild(taskText)
-
-    _editButton(element, task)
     _removeTaskButton(element, task, project)
 
 }
@@ -174,8 +175,13 @@ function _removeTaskButton(element, task, project) {
     remove.textContent = '🗑️'
     remove.addEventListener('click', function removeListener(event){
         event.stopPropagation()
-        project.remove(task.title)
-        _removeChildren(event.currentTarget.parentNode)
+        let message = "Are you sure you want to delete this task?"
+        if(confirm(message)){
+            let parentDiv = event.currentTarget.parentNode
+            project.remove(task.title)
+            _removeChildren(parentDiv)
+            parentDiv.remove()
+        }  
     })
     element.appendChild(remove)
 }
