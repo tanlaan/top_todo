@@ -85,7 +85,7 @@ export function renderFullTask(element, task, project) {
 
     element.addEventListener('click', function fullTaskListener(event) {
         element.classList.remove('expanded')
-        renderTask(event.currentTarget, task)
+        renderTask(event.currentTarget, task, project)
         element.removeEventListener('click', fullTaskListener)
     })
 
@@ -141,7 +141,7 @@ function _addTaskButton(element, project){
         event.stopPropagation()
         let formCheck = document.getElementById('new-task')
         if(typeof(formCheck) == 'undeclared' || formCheck == null){
-            addTaskForm(element, project)
+            addTaskForm(element, project)  
         }
 
     })
@@ -166,6 +166,7 @@ function _editButton(element, task, project){
     edit.setAttribute('type', 'button')
     edit.addEventListener('click', function editListener(event){
         event.stopPropagation()
+        addTaskForm(element, project, task)
     })
     element.appendChild(edit)
 }
@@ -192,7 +193,7 @@ function _removeChildren(element) {
     }
 }
 
-function addTaskForm(element, project) {
+function addTaskForm(element, project, task) {
     let taskForm = document.createElement('form')
     taskForm.setAttribute('id', 'new-task')
 
@@ -205,6 +206,7 @@ function addTaskForm(element, project) {
     let title = document.createElement('input')
     title.setAttribute('type', 'text')
     title.setAttribute('name', 'title')
+    if(task) title.value = task.title
     taskForm.appendChild(title)
 
     // priority
@@ -218,6 +220,7 @@ function addTaskForm(element, project) {
     priority.setAttribute('min', '-4')
     priority.setAttribute('max', '5')
     priority.setAttribute('name', 'priority')
+    if(task) priority.value = task.priority
     taskForm.appendChild(priority)
 
     // dueDate
@@ -229,6 +232,7 @@ function addTaskForm(element, project) {
     let dueDate = document.createElement('input')
     dueDate.setAttribute('type', 'date')
     dueDate.setAttribute('name', 'dueDate')
+    if(task) dueDate.value = task.dueDate
     taskForm.appendChild(dueDate)
 
     // task
@@ -237,10 +241,11 @@ function addTaskForm(element, project) {
     taskLabel.setAttribute('for', 'task')
     taskForm.appendChild(taskLabel)
 
-    let task = document.createElement('input')
-    task.setAttribute('type', 'text')
-    task.setAttribute('name', 'task')
-    taskForm.appendChild(task)
+    let taskValue = document.createElement('input')
+    taskValue.setAttribute('type', 'text')
+    taskValue.setAttribute('name', 'task')
+    if(task) taskValue.value = task.task
+    taskForm.appendChild(taskValue)
     // note
     let noteLabel = document.createElement('label')
     noteLabel.textContent = 'Note:'
@@ -250,6 +255,7 @@ function addTaskForm(element, project) {
     let note = document.createElement('input')
     note.setAttribute('type', 'text')
     note.setAttribute('name', 'note')
+    if(task) note.value = task.note
     taskForm.appendChild(note)
     // tags
     let tagsLabel = document.createElement('label')
@@ -260,6 +266,7 @@ function addTaskForm(element, project) {
     let tags = document.createElement('input')
     tags.setAttribute('type', 'text')
     tags.setAttribute('name', 'tags')
+    if(task) tags.value = task.tags
     taskForm.appendChild(tags)
     // complete
     let completeLabel = document.createElement('label')
@@ -270,12 +277,18 @@ function addTaskForm(element, project) {
     let complete = document.createElement('input')
     complete.setAttribute('type', 'checkbox')
     complete.setAttribute('name', 'complete')
+    if(task) complete.checked = task.complete
     taskForm.appendChild(complete)
 
     let okay = document.createElement('button')
     okay.textContent = 'OK'
     okay.setAttribute('type', 'button')
-    okay.addEventListener('click', (event) => newTaskListener(event, project))
+    if(task) {
+        okay.addEventListener('click', (event) => newTaskListener(event, project, task))
+    } else {
+        okay.addEventListener('click', (event) => newTaskListener(event, project))
+    }
+    
     taskForm.appendChild(okay)
 
     let cancel = document.createElement('button')
@@ -287,22 +300,40 @@ function addTaskForm(element, project) {
         form.remove()
     })
     taskForm.appendChild(cancel)
+    if(task) {
+        element.parentNode.insertBefore(taskForm, element.nextSibling)
+    } else {
+        element.appendChild(taskForm)
+    }
 
-    element.appendChild(taskForm)
 }
 
-function newTaskListener(event, project){
+function newTaskListener(event, project, task){
     let data = event.currentTarget.parentNode
     let title = data.querySelector('input[name="title"]').value
     let priority = data.querySelector('input[name="priority"]').value
     let dueDate = data.querySelector('input[name="dueDate"]').value
-    let task = data.querySelector('input[name="task"]').value
+    let newTask = data.querySelector('input[name="task"]').value
     let note = data.querySelector('input[name="note"]').value
     let tags = data.querySelector('input[name="tags"]').value
-    let complete = data.querySelector('input[name="complete"]').value
-    let formTask = new Task(title, priority, dueDate, task, note, tags, complete)
-    console.log(formTask)
-    project.add(formTask)
+    let complete = data.querySelector('input[name="complete"]').checked
+    if(!task) {
+        let formTask = new Task(title, priority, dueDate, newTask, note, tags, complete)
+        project.add(formTask)
+    } else {
+        task.title = title
+        task.priority = priority
+        task.dueDate = dueDate
+        task.task = newTask
+        task.note = note
+        task.tags = tags
+        if(task.complete != complete){
+            task.toggleComplete()
+        }
+        
+    }
+    
+    
     let projectTasks = document.getElementById('project-tasks')
     let root = projectTasks.parentNode
     _removeChildren(projectTasks)
