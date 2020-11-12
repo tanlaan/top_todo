@@ -1,4 +1,4 @@
-import { Task } from "./task"
+import { Project, Task } from "./task"
 
 export function renderPage(element, project, projects) {
     _removeChildren(element)
@@ -33,7 +33,7 @@ export function renderTabs(element, selectedProject, projects) {
         list.appendChild(item)
     }
     tabs.append(list)
-    tabs.appendChild(_getAddProjectButton())
+    tabs.appendChild(_getAddProjectButton(projects))
     element.appendChild(tabs)
 }
 
@@ -141,14 +141,14 @@ function _getAddTaskButton(element, project){
     element.appendChild(add)
 }
 
-function _getAddProjectButton() {
+function _getAddProjectButton(projects) {
     let add = document.createElement('button')
     add.classList.add('add-project')
     add.innerHTML = "&#43;"
     add.setAttribute('type', 'button')
     add.addEventListener('click', function editListener(event){
         event.stopPropagation()
-        _getAddProjectForm(event.currentTarget.parentNode)
+        event.currentTarget.parentNode.appendChild(_getAddProjectForm(projects))
     })
     return add
 }
@@ -188,8 +188,40 @@ function _removeChildren(element) {
     }
 }
 
-function _getAddProjectForm(element){
+function _getAddProjectForm(projects){
+    let projectForm = document.createElement('form')
+    projectForm.setAttribute('id', 'new-project')
 
+    // title
+    let titleLabel = document.createElement('label')
+    titleLabel.textContent = 'Project:'
+    titleLabel.setAttribute('for', 'title')
+    projectForm.appendChild(titleLabel)
+
+    let title = document.createElement('input')
+    title.setAttribute('type', 'text')
+    title.setAttribute('name', 'title')
+    projectForm.appendChild(title)
+
+    let okay = document.createElement('button')
+    okay.textContent = 'OK'
+    okay.setAttribute('type', 'button')
+    okay.addEventListener('click', (event) => newProjectListener(event, projects))
+    
+    projectForm.appendChild(okay)
+
+    let cancel = document.createElement('button')
+    cancel.textContent = 'Cancel'
+    cancel.setAttribute('type', 'button')
+    cancel.addEventListener('click', function cancelListener(event){
+        let form = document.getElementById('new-project')
+        _removeChildren(form)
+        form.remove()
+    })
+
+    projectForm.appendChild(cancel)
+
+    return projectForm
 }
 
 function _getAddTaskForm(project, task) {
@@ -302,6 +334,16 @@ function _getAddTaskForm(project, task) {
     taskForm.appendChild(cancel)
 
     return taskForm
+}
+
+function newProjectListener(event, projects){
+    let data = event.currentTarget.parentNode
+    let title = data.querySelector('input[name="title"]').value
+    let newProject = new Project(title)
+    projects.push(newProject)
+    let root = document.querySelector('main')
+    _removeChildren(root)
+    renderPage(root, newProject, projects)
 }
 
 function newTaskListener(event, project, task){
