@@ -33,7 +33,7 @@ export function renderTabs(element, selectedProject, projects) {
         list.appendChild(item)
     }
     tabs.append(list)
-    _addProjectButton(tabs)
+    tabs.appendChild(_getAddProjectButton())
     element.appendChild(tabs)
 }
 
@@ -64,18 +64,11 @@ export function renderTask(element, task, project) {
     let complete = document.createElement('input')
     complete.setAttribute('type', 'checkbox')
     complete.checked = task.complete
-    // Click event to change task's complete 
-    // complete.addEventListener('click', function completeListener(event){
-    //     event.stopPropagation()
-    //     task.toggleComplete()
-    // })
-    // element.appendChild(complete)
-
 
     let taskText = document.createElement('p')
     taskText.textContent = task.task
     element.appendChild(taskText)
-    _removeTaskButton(element, task, project)
+    element.appendChild(_getRemoveTaskButton(task, project))
 
 }
 
@@ -117,8 +110,8 @@ export function renderFullTask(element, task, project) {
     tagText.textContent = `[${task.tags}]`
     element.appendChild(tagText)
 
-    _editButton(element, task, project)
-    _removeTaskButton(element, task, project)
+    element.appendChild(_getEditButton(task, project))
+    element.appendChild(_getRemoveTaskButton(task, project))
 }
 
 export function renderProject(element, project){
@@ -129,11 +122,11 @@ export function renderProject(element, project){
         renderTask(container, task, project)
         projectTasks.appendChild(container)
     }
-    _addTaskButton(projectTasks, project)
+    _getAddTaskButton(projectTasks, project)
     element.appendChild(projectTasks)
 }
 
-function _addTaskButton(element, project){
+function _getAddTaskButton(element, project){
     let add = document.createElement('button')
     add.classList.add('add-task')
     add.innerHTML =  "&#43;"
@@ -141,37 +134,39 @@ function _addTaskButton(element, project){
         event.stopPropagation()
         let formCheck = document.getElementById('new-task')
         if(typeof(formCheck) == 'undeclared' || formCheck == null){
-            addTaskForm(element, project)  
+            element.appendChild(_getAddTaskForm(project))
         }
 
     })
     element.appendChild(add)
 }
 
-function _addProjectButton(element) {
+function _getAddProjectButton() {
     let add = document.createElement('button')
     add.classList.add('add-project')
     add.innerHTML = "&#43;"
     add.setAttribute('type', 'button')
     add.addEventListener('click', function editListener(event){
         event.stopPropagation()
+        _getAddProjectForm(event.currentTarget.parentNode)
     })
-    element.appendChild(add)
+    return add
 }
 
-function _editButton(element, task, project){
+function _getEditButton(task, project){
     let edit = document.createElement('button')
     edit.classList.add('edit-task')
     edit.innerHTML = "&#128221;"
     edit.setAttribute('type', 'button')
     edit.addEventListener('click', function editListener(event){
         event.stopPropagation()
-        addTaskForm(element, project, task)
+        let element = event.currentTarget.parentNode
+        element.parentNode.insertBefore(_getAddTaskForm(project, task), element.nextSibling)
     })
-    element.appendChild(edit)
+    return edit
 }
 
-function _removeTaskButton(element, task, project) {
+function _getRemoveTaskButton(task, project) {
     let remove = document.createElement('button')
     remove.textContent = '🗑️'
     remove.addEventListener('click', function removeListener(event){
@@ -184,7 +179,7 @@ function _removeTaskButton(element, task, project) {
             parentDiv.remove()
         }  
     })
-    element.appendChild(remove)
+    return remove
 }
 
 function _removeChildren(element) {
@@ -193,7 +188,11 @@ function _removeChildren(element) {
     }
 }
 
-function addTaskForm(element, project, task) {
+function _getAddProjectForm(element){
+
+}
+
+function _getAddTaskForm(project, task) {
     let taskForm = document.createElement('form')
     taskForm.setAttribute('id', 'new-task')
 
@@ -299,13 +298,10 @@ function addTaskForm(element, project, task) {
         _removeChildren(form)
         form.remove()
     })
+    
     taskForm.appendChild(cancel)
-    if(task) {
-        element.parentNode.insertBefore(taskForm, element.nextSibling)
-    } else {
-        element.appendChild(taskForm)
-    }
 
+    return taskForm
 }
 
 function newTaskListener(event, project, task){
