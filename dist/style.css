@@ -1,0 +1,55 @@
+#selected-tab{
+    background-color: #eeeeee;
+}
+ul{
+    padding:0px;
+}
+li:hover{
+    background-color: #dddddd;
+}
+#project-tabs li {
+    list-style-type: none;
+    padding: 1em;
+    display: inline;
+}
+
+.task-box {
+    margin-top: 1rem;
+    padding:.5em;
+}
+
+.task-box:hover { 
+    background-color: #eeeeee;
+    cursor: pointer;
+}
+
+button {
+    margin-left: 1rem;
+}
+
+.task-box *{
+    display:inline;
+    margin-right: 2em;
+}
+
+.expanded *{
+    margin:0;
+    padding:0;
+    display: block;
+}
+.expanded input{
+    display: inline;
+}
+.expanded button{
+    display: inline;
+}
+
+#new-task{
+    background-color: #eeeeee;
+    padding: 1em;
+    width: auto;
+}
+
+#new-task input{
+    display: block;
+}
