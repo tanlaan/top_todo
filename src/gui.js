@@ -124,6 +124,7 @@ export function renderProject(element, project){
     }
     _getAddTaskButton(projectTasks, project)
     element.appendChild(projectTasks)
+    _saveState()
 }
 
 function _getAddTaskButton(element, project){
@@ -175,6 +176,7 @@ function _getRemoveTaskButton(task, project) {
         if(confirm(message)){
             let parentDiv = event.currentTarget.parentNode
             project.remove(task.title)
+            _saveState()
             _removeChildren(parentDiv)
             parentDiv.remove()
         }  
@@ -377,4 +379,8 @@ function newTaskListener(event, project, task){
     _removeChildren(projectTasks)
     projectTasks.remove()
     renderProject(root, project)
+}
+
+function _saveState(){
+    localStorage.setItem('projects', JSON.stringify(window.projects))
 }
