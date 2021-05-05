@@ -46,7 +46,7 @@ class Project {
   }
 
   remove(taskTitle) {
-    // Should this a map or reduce?
+    // Should this be a  map or reduce?
     for (let i = 0; i < this.storage.length; i += 1) {
       if (this.storage[i].title === taskTitle) {
         this.storage.splice(i, 1);
@@ -55,13 +55,33 @@ class Project {
   }
 }
 
-// CONCATENATED MODULE: ./src/gui.js
-
+// CONCATENATED MODULE: ./src/state.js
 
 
 function saveState() {
   localStorage.setItem('projects', JSON.stringify(window.projects));
 }
+
+function expandState(jsonState) {
+   return JSON.parse(jsonState).map(project => {
+
+    // Don't modify the project object itself
+    let expandedTabs = project
+    
+    // Turn project's tasks into Task objects
+    expandedTabs.storage = expandedTabs.storage.map(task => Object.assign(new Task, task))
+
+    // Turn project into Project object and return
+    return Object.assign(new Project(), expandedTabs)
+  });
+}
+
+
+
+// CONCATENATED MODULE: ./src/gui.js
+
+
+
 
 function removeChildren(element) {
   while (element.firstChild) {
@@ -234,7 +254,6 @@ function renderProject(element, project) {
   }
   getAddTaskButton(projectTasks, project);
   element.appendChild(projectTasks);
-  saveState();
 }
 
 function renderPage(element, project) {
@@ -242,6 +261,7 @@ function renderPage(element, project) {
   renderHeader(element);
   renderTabs(element);
   renderProject(element, project);
+  saveState();
 }
 
 function getAddProjectButton() {
@@ -476,27 +496,20 @@ function newTaskListener(event, project, task) {
 
 
 
+var provider = new firebase.auth.GoogleAuthProvider()
+// Check if firebase has information for our user?
+// So that means we need to do user authentication now though...
+//
 
 // Initialize projects storage
 window.projects = [];
 
 // Check local storage for prior usage
 if (localStorage.getItem('projects')) {
-  window.projects = JSON.parse(localStorage.getItem('projects')).map(project => {
-
-    // Don't modify the project object itself
-    let expandedTabs = project
-    
-    // Turn project's tasks into Task objects
-    expandedTabs.storage = expandedTabs.storage.map(task => Object.assign(new Task, task))
-
-    // Turn project into Project object and return
-    return Object.assign(new Project(), expandedTabs)
-  });
+  window.projects = expandState(localStorage.getItem('projects'));
 } 
 
 const root = document.querySelector('main');
-console.log(window.projects)
 renderPage(root, window.projects[0], window.projects);
 
 
