@@ -1,9 +1,6 @@
 import Task from './task';
 import Project from './project';
-
-function saveState() {
-  localStorage.setItem('projects', JSON.stringify(window.projects));
-}
+import {saveState} from './state';
 
 function removeChildren(element) {
   while (element.firstChild) {
@@ -176,7 +173,6 @@ export function renderProject(element, project) {
   }
   getAddTaskButton(projectTasks, project);
   element.appendChild(projectTasks);
-  saveState();
 }
 
 export function renderPage(element, project) {
@@ -184,6 +180,7 @@ export function renderPage(element, project) {
   renderHeader(element);
   renderTabs(element);
   renderProject(element, project);
+  saveState();
 }
 
 function getAddProjectButton() {
