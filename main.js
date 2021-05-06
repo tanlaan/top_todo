@@ -75,13 +75,13 @@ function saveState() {
   })
 }
 
-function getState() {
-  docRef
+async function getState() {
+  await docRef
     .withConverter(projectConverter)
     .get().then((doc) => {
       if(doc.exists){
-        console.log(doc)
-        window.projects = doc
+        let data = doc.data()
+        window.projects = data
       } else {
         // Project didn't exist
         window.projects = []
@@ -90,6 +90,7 @@ function getState() {
     .catch((error) => {
       console.log('error getting document:', error)
     })
+  return;
 }
 
 var projectConverter = {
@@ -97,8 +98,9 @@ var projectConverter = {
     return { projects: JSON.parse(JSON.stringify(projects)) }
   },
   fromFirestore: function(snapshot, options){
-    let data = snapshot.data(options)['projects']
-    return JSON.parse(data).map(project => {
+    let data = snapshot.data(options)
+    console.log(data)
+    return data["projects"].map(project => {
 
       // Don't modify the project object itself
       let expandedTabs = project
@@ -311,7 +313,6 @@ function renderPage(element, project) {
   renderHeader(element);
   renderTabs(element);
   renderProject(element, project);
-  saveState();
 }
 
 function getAddProjectButton() {
@@ -505,6 +506,7 @@ function newProjectListener(event) {
   const title = data.querySelector('input[name="title"]').value;
   const newProject = new project_Project(title);
   window.projects.push(newProject);
+  saveState();
   const root = document.querySelector('main');
   removeChildren(root);
   renderPage(root, newProject);
@@ -534,6 +536,7 @@ function newTaskListener(event, project, task) {
       task.toggleComplete();
     }
   }
+  saveState();
 
   const projectTasks = document.getElementById('project-tasks');
   const root = projectTasks.parentNode;
@@ -556,8 +559,13 @@ window.projects = [];
 // } 
 
 const root = document.querySelector('main');
-renderPage(root, window.projects[0], window.projects);
 
+getState().then(() => {
+  renderPage(root, window.projects[0], window.projects);
+})
+.catch((error) => {
+  console.log('Something went wrong rendering the page:', error)
+});
 
 /******/ })()
 ;
