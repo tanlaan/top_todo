@@ -180,7 +180,6 @@ export function renderPage(element, project) {
   renderHeader(element);
   renderTabs(element);
   renderProject(element, project);
-  saveState();
 }
 
 function getAddProjectButton() {
@@ -374,6 +373,7 @@ function newProjectListener(event) {
   const title = data.querySelector('input[name="title"]').value;
   const newProject = new Project(title);
   window.projects.push(newProject);
+  saveState();
   const root = document.querySelector('main');
   removeChildren(root);
   renderPage(root, newProject);
@@ -403,6 +403,7 @@ function newTaskListener(event, project, task) {
       task.toggleComplete();
     }
   }
+  saveState();
 
   const projectTasks = document.getElementById('project-tasks');
   const root = projectTasks.parentNode;

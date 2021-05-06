@@ -11,5 +11,10 @@ window.projects = [];
 // } 
 
 const root = document.querySelector('main');
-renderPage(root, window.projects[0], window.projects);
 
+getState().then(() => {
+  renderPage(root, window.projects[0], window.projects);
+})
+.catch((error) => {
+  console.log('Something went wrong rendering the page:', error)
+});
