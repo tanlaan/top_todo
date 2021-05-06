@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 
 // CONCATENATED MODULE: ./src/task.js
-class Task {
+class task_Task {
   constructor(title, priority = 0, dueDate, task, note, tags) {
     this.title = title;
     this.priority = priority;
@@ -31,7 +31,7 @@ class Task {
 }
 
 // CONCATENATED MODULE: ./src/project.js
-class Project {
+class project_Project {
   constructor(name) {
     this.name = name;
     this.storage = [];
@@ -58,8 +58,58 @@ class Project {
 // CONCATENATED MODULE: ./src/state.js
 
 
+
+let db = firebase.firestore()
+const docRef = db.collection('projects').doc('chris')
+
 function saveState() {
-  localStorage.setItem('projects', JSON.stringify(window.projects));
+  // localStorage.setItem('projects', JSON.stringify(window.projects));
+  docRef
+    .withConverter(projectConverter)
+    .set(window.projects)
+  .then(() => {
+    console.log('saved.')
+  })
+  .catch((error) => {
+    console.log('error saving:', error)
+  })
+}
+
+function getState() {
+  docRef
+    .withConverter(projectConverter)
+    .get().then((doc) => {
+      if(doc.exists){
+        console.log(doc)
+        window.projects = doc
+      } else {
+        // Project didn't exist
+        window.projects = []
+      }
+    })
+    .catch((error) => {
+      console.log('error getting document:', error)
+    })
+}
+
+var projectConverter = {
+  toFirestore: function(projects) {
+    return { projects: JSON.parse(JSON.stringify(projects)) }
+  },
+  fromFirestore: function(snapshot, options){
+    let data = snapshot.data(options)['projects']
+    return JSON.parse(data).map(project => {
+
+      // Don't modify the project object itself
+      let expandedTabs = project
+      
+      // Turn project's tasks into Task objects
+      expandedTabs.storage = expandedTabs.storage.map(task => Object.assign(new task_Task, task))
+
+      // Turn project into Project object and return
+      return Object.assign(new project_Project(), expandedTabs)
+    });
+  }
 }
 
 function expandState(jsonState) {
@@ -453,7 +503,7 @@ function getAddTaskForm(project, task) {
 function newProjectListener(event) {
   const data = event.currentTarget.parentNode;
   const title = data.querySelector('input[name="title"]').value;
-  const newProject = new Project(title);
+  const newProject = new project_Project(title);
   window.projects.push(newProject);
   const root = document.querySelector('main');
   removeChildren(root);
@@ -471,7 +521,7 @@ function newTaskListener(event, project, task) {
   const tags = data.querySelector('input[name="tags"]').value;
   const complete = data.querySelector('input[name="complete"]').checked;
   if (!task) {
-    const formTask = new Task(title, priority, dueDate, newTask, note, tags, complete);
+    const formTask = new task_Task(title, priority, dueDate, newTask, note, tags, complete);
     project.add(formTask);
   } else {
     task.title = title;
@@ -496,18 +546,14 @@ function newTaskListener(event, project, task) {
 
 
 
-var provider = new firebase.auth.GoogleAuthProvider()
-// Check if firebase has information for our user?
-// So that means we need to do user authentication now though...
-//
-
 // Initialize projects storage
+//
 window.projects = [];
 
 // Check local storage for prior usage
-if (localStorage.getItem('projects')) {
-  window.projects = expandState(localStorage.getItem('projects'));
-} 
+// if (localStorage.getItem('projects')) {
+//   window.projects = expandState(localStorage.getItem('projects'));
+// } 
 
 const root = document.querySelector('main');
 renderPage(root, window.projects[0], window.projects);
