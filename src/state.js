@@ -26,6 +26,8 @@ async function getState() {
         window.projects = data
       } else {
         // Project didn't exist
+        // TODO: Create the document so future
+        // saves can make use of update vs. set
         window.projects = []
       }
     })
@@ -54,20 +56,6 @@ var projectConverter = {
       return Object.assign(new Project(), expandedTabs)
     });
   }
-}
-
-function expandState(jsonState) {
-   return JSON.parse(jsonState).map(project => {
-
-    // Don't modify the project object itself
-    let expandedTabs = project
-    
-    // Turn project's tasks into Task objects
-    expandedTabs.storage = expandedTabs.storage.map(task => Object.assign(new Task, task))
-
-    // Turn project into Project object and return
-    return Object.assign(new Project(), expandedTabs)
-  });
 }
 
 export {saveState, getState};

@@ -1,5 +1,5 @@
 import { renderPage } from './gui';
-import { getState } from './state';
+import {getState} from './state';
 
 // Initialize projects storage
 //
@@ -15,6 +15,6 @@ const root = document.querySelector('main');
 getState().then(() => {
   renderPage(root, window.projects[0], window.projects);
 })
-.catch((error) => {
-  console.log('Something went wrong rendering the page:', error)
+  .catch((error) => {
+    console.log('Something went wrong rendering the page:', error)
 });
